@@ -2,7 +2,7 @@ from rpi_ws281x import *
 import argparse
 
 # LED strip configuration:
-LED_COUNT      = 150      # Number of LED pixels.
+LED_COUNT      = 50      # Number of LED pixels.
 LED_PIN        = 21      # GPIO pin connected to the pixels (18 uses PWM!).
 LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
 LED_DMA        = 10      # DMA channel to use for generating signal (try 10)
@@ -11,7 +11,7 @@ LED_INVERT     = False   # True to invert the signal (when using NPN transistor 
 LED_CHANNEL    = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
 
 
-LED_COUNTS      = [250,250]    # Number of LED pixels.
+LED_COUNTS      = [50,50]    # Number of LED pixels.
 #LED_COUNTS      = [50,50]    # Number of LED pixels.
 #LED_PINS       = [12,21]     # GPIO pin connected to the pixels (18 uses PWM!).
 LED_PINS       = [21,12]     # GPIO pin connected to the pixels (18 uses PWM!).
@@ -44,8 +44,8 @@ from picamera import PiCamera
 
 
 def readImage(name):
-    try: 
-    #if True:
+    #try: 
+    if True:
         file = name
         img = cv2.imread(file)
         img2 = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) 
@@ -107,11 +107,12 @@ def readImage(name):
         # show the output image
         #cv2.imshow("Image", image)
         outname = name.replace(".jpg","")+"-cv2-output"+".jpg"
+        print(outname)
         cv2.imwrite(outname,image)
         #l.append((cX,cY))
         return (cX,cY)
-    except:
-    #else:
+    #except:
+    else:
         exc_type, exc_value, exc_traceback = sys.exc_info()
         #traceback.print_tb(exc_traceback, limit=1, file=sys.stdout)
         cX,cY = -1,-1
@@ -187,8 +188,54 @@ def walkStrands():
         
     #time.sleep(.01)
   camera.capture('../testimage.jpg')
+  readImage('../testimage.jpg')
   #time.sleep(5)
   
+def lightStick():
+  global strip
+  
+  for i in range(LED_COUNTS[0]-14,LED_COUNTS[0]-1):
+    print(i)
+    N = 128
+    #if i < 50:
+    if True:
+        strip[1].setPixelColor(i,Color(N,N,N) )
+        strip[1].show()
+        strip[0].setPixelColor(i,Color(N,N,N) )
+        strip[0].show()
+    else: 
+        strip[0].setPixelColor(i,Color(255,255,255) )
+        strip[0].show()
+        
+    #time.sleep(.01)
+  time.sleep(5)
+  camera.capture('../testimage.jpg')
+  readImage('../testimage.jpg')
+
+  #time.sleep(5)
+  
+def unlightStick():
+  global strip
+  
+  for i in range(LED_COUNTS[0]-14,LED_COUNTS[0]-1):
+    print(i)
+    N = 0
+    #if i < 50:
+    if True:
+        strip[1].setPixelColor(i,Color(N,N,N) )
+        strip[1].show()
+        strip[0].setPixelColor(i,Color(N,N,N) )
+        strip[0].show()
+    else: 
+        strip[0].setPixelColor(i,Color(255,255,255) )
+        strip[0].show()
+        
+    #time.sleep(.01)
+  # time.sleep(5)
+#   camera.capture('../testimage.jpg')
+#   readImage('../testimage.jpg')
+
+  #time.sleep(5)
   
 
 def wsshowLines(datafilename):
@@ -357,23 +404,13 @@ def main():
     global  num_pixels,pixels
     
  
-    datafilename = "dualorderednew.csv"
+    #datafilename = "dualorderednew.csv"
     strands = len(LED_COUNTS)
     
-    walkStrands()
-    clearStrand()
+    lightStick()
+    unlightStick()
 
-    for strand in range(strands):
-       
-     alignPixels(datafilename,strand,LED_COUNTS[strand])
-    clearStrand()
 
-        
-    wsshowLines(datafilename)
-    clearStrand()
-
-#     wsshowWaveLines(datafilename)
-#     clearStrand()
 
     
 

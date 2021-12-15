@@ -11,7 +11,7 @@ LED_INVERT     = False   # True to invert the signal (when using NPN transistor 
 LED_CHANNEL    = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
 
 
-LED_COUNTS      = [250,250]    # Number of LED pixels.
+LED_COUNTS      = [150,150]    # Number of LED pixels.
 #LED_COUNTS      = [50,50]    # Number of LED pixels.
 #LED_PINS       = [12,21]     # GPIO pin connected to the pixels (18 uses PWM!).
 LED_PINS       = [21,12]     # GPIO pin connected to the pixels (18 uses PWM!).
@@ -41,7 +41,34 @@ from os import path
 import cProfile
 from picamera import PiCamera
 
+ALL =[ ['00000000','00111100','01100110','01100110','01111110','01100110','01100110','01100110']
+,['01111000','01001000','01001000','01110000','01001000','01000100','01000100','01111100']
+,['00000000','00011110','00100000','01000000','01000000','01000000','00100000','00011110']
+,['00000000','00111000','00100100','00100010','00100010','00100100','00111000','00000000']
+,['00000000','00111100','00100000','00111000','00100000','00100000','00111100','00000000']
+,['00000000','00111100','00100000','00111000','00100000','00100000','00100000','00000000']
+,['00000000','00111110','00100000','00100000','00101110','00100010','00111110','00000000']
+,['00000000','00100100','00100100','00111100','00100100','00100100','00100100','00000000']
+,['00000000','00111000','00010000','00010000','00010000','00010000','00111000','00000000']
+,['00000000','00011100','00001000','00001000','00001000','00101000','00111000','00000000']
+,['00000000','00100100','00101000','00110000','00101000','00100100','00100100','00000000']
+,['00000000','00100000','00100000','00100000','00100000','00100000','00111100','00000000']
+,['00000000','00000000','01000100','10101010','10010010','10000010','10000010','00000000']
+,['00000000','00100010','00110010','00101010','00100110','00100010','00000000','00000000']
+,['00000000','00111100','01000010','01000010','01000010','01000010','00111100','00000000']
+,['00000000','00111000','00100100','00100100','00111000','00100000','00100000','00000000']
+,['00000000','00111100','01000010','01000010','01000010','01000110','00111110','00000001']
+,['00000000','00111000','00100100','00100100','00111000','00100100','00100100','00000000']
+,['00000000','00111100','00100000','00111100','00000100','00000100','00111100','00000000']
+,['00000000','01111100','00010000','00010000','00010000','00010000','00010000','00000000']
+,['00000000','01000010','01000010','01000010','01000010','00100100','00011000','00000000']
+,['00000000','00100010','00100010','00100010','00010100','00010100','00001000','00000000']
+,['00000000','10000010','10010010','01010100','01010100','00101000','00000000','00000000']
+,['00000000','01000010','00100100','00011000','00011000','00100100','01000010','00000000']
+,['00000000','01000100','00101000','00010000','00010000','00010000','00010000','00000000']
+,['00000000','00111100','00000100','00001000','00010000','00100000','00111100','00000000']]
 
+ALLLETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 def readImage(name):
     try: 
@@ -97,7 +124,7 @@ def readImage(name):
         # draw the bright spot on the image
             (x, y, w, h) = cv2.boundingRect(c)
             ((cX, cY), radius) = cv2.minEnclosingCircle(c)
-            print(int(cX),int(cY),int(radius))
+            #print(cX,cY)
            
             cv2.circle(image, (int(cX), int(cY)), int(radius),
                 (0, 0, 255), 3)
@@ -106,16 +133,14 @@ def readImage(name):
         
         # show the output image
         #cv2.imshow("Image", image)
-        outname = name.replace(".jpg","")+"-cv2-output"+".jpg"
-        cv2.imwrite(outname,image)
         #l.append((cX,cY))
         return (cX,cY)
     except:
     #else:
         exc_type, exc_value, exc_traceback = sys.exc_info()
-        #traceback.print_tb(exc_traceback, limit=1, file=sys.stdout)
+        traceback.print_tb(exc_traceback, limit=1, file=sys.stdout)
         cX,cY = -1,-1
-        print(cX,cY,name,exc_type,exc_value)
+        print(cX,cY)
         return (cX,cY)
 
  
@@ -172,11 +197,9 @@ def walkStrands():
   
   for i in range(LED_COUNTS[0]):
     print(i)
-    N = 128
-    #if i < 50:
-    if True:
-        strip[0].setPixelColor(i,Color(N,N,N) )
-        strip[1].setPixelColor(i,Color(N,N,N) )
+    if i < 50:
+        strip[0].setPixelColor(i,Color(255,255,255) )
+        strip[1].setPixelColor(i,Color(255,255,255) )
         strip[1].show()
         strip[0].show()
     else: 
@@ -185,11 +208,7 @@ def walkStrands():
         strip[1].show()
         strip[0].show()
         
-    #time.sleep(.01)
-  camera.capture('../testimage.jpg')
-  #time.sleep(5)
-  
-  
+    time.sleep(.01)
 
 def wsshowLines(datafilename):
     global num_pixels,strip
@@ -344,6 +363,24 @@ def wsshowWaveLines(datafilename):
             strip[0].show()
            #print(2)
            #time.sleep(.02)
+           
+def wsShowLetters(datafilename):
+    for i,letter in enumerate(ALLLETTERS):
+      print(letter,ALL[i])
+      
+    global num_pixels,strip
+     
+    XFACTOR = 20
+    df = pd.read_csv(datafilename+"0")
+    df2 = pd.read_csv(datafilename+"1")
+    df = pd.concat([df,df2])
+    df = df[df["1"] < 600] ### HACK
+
+    print(df)
+    l1 =  [tuple(x) for x in df.values]
+    l2 =  [(x[1],x[0],x[2],x[3]) for x in df.values]
+           
+           
 def clearStrand():
     global strip
     for strand in range(strands):
@@ -360,16 +397,17 @@ def main():
     datafilename = "dualorderednew.csv"
     strands = len(LED_COUNTS)
     
-    walkStrands()
+#    walkStrands()
     clearStrand()
 
-    for strand in range(strands):
-       
-     alignPixels(datafilename,strand,LED_COUNTS[strand])
+#     for strand in range(strands):
+#       
+#       alignPixels(datafilename,strand,LED_COUNTS[strand])
     clearStrand()
 
         
-    wsshowLines(datafilename)
+    #wsshowLines(datafilename)
+    wsShowLetters(datafilename)
     clearStrand()
 
 #     wsshowWaveLines(datafilename)

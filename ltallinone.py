@@ -98,6 +98,7 @@ def readImage(name):
 
  
 def takePicture(pixelnumber,name):
+    global camera
     j = pixelnumber
     #RGB = [[(255,0,0),(255,0,0),(255,0,0)],[(0,0,255),(0,255,0),(255,0,0)], [(255,0,0),(0,0,255),(0,255,0)], [(0,255,0),(255,0,0),(0,0,255)]]
     pixels.fill((0, 0, 0))
@@ -122,7 +123,7 @@ def takePicture(pixelnumber,name):
        
        
 def alignPixels(datafilename):
-
+    global camera
     global num_pixels
     
     camera = PiCamera()
@@ -322,7 +323,7 @@ def createFrame():
          for v in dotmatrix[i][j]:
              pixels[v] = (128,128,128)
          pixels.show()
-         time.sleep(.1)
+         time.sleep(.01)
            
 def drawScrollA():
     letter_a = ['00111100', '01000010', '01000010', '01111110', '01000010', '01000010', '01000010', '01000010']
@@ -355,7 +356,7 @@ if __name__ == '__main__':
  
     # The number of NeoPixels 
     #num_pixels = 30 
-    num_pixels = 150 
+    num_pixels = 100 
  
     # The order of the pixel colors - RGB or GRB. Some NeoPixels have red and green reversed! 
     # For RGBW NeoPixels, simply change the ORDER to RGBW or GRBW. 

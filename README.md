@@ -1,5 +1,7 @@
 # LEDComputerVision<br>
 
+This is to be used with a Raspi 4 4 GB model - SD size 16 GB - RaspberryPi OS (at the time of this writing) 
+
 pyenv local 3.8.3<br>
 pip install board<br>
 pip install rpi_ws281x adafruit-circuitpython-neopixel<br>
